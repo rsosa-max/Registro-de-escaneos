@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Control de escaneos intraorales – CAD/CAM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+<style id="css">
+:root{--navy:#0c2a57;--scrub:#1d5bb8;--glove:#a9d8f5;--clinic:#f6f8fb;--panel:#fff;--ink:#0f1e33;--muted:#5a6b80;--line:#e2e8f0;--field:#f1f5fa;
+--lvl-0:#b4561a;--lvl-0-soft:#fbeadc;--lvl-1:#1d5bb8;--lvl-1-soft:#e2ecfa;--lvl-2:#0f7a57;--lvl-2-soft:#d9f2e7;--error:#b3261e;--error-soft:#fde7e5;--brand:#1d5bb8}
+@media (prefers-color-scheme:dark){:root{--panel:#0f1d33;--ink:#e9eef6;--muted:#9aaac0;--line:#22344f;--field:#16263f;--brand:#5d9bf0;--lvl-0-soft:#3a2614;--lvl-1-soft:#17325a;--lvl-2-soft:#123b2e;--clinic:#0a1628}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:Geist,system-ui,sans-serif;font-size:16px;line-height:1.55;color:var(--ink);background:var(--navy);min-height:100vh}
+.bg{position:fixed;inset:0;z-index:0;background:
+ radial-gradient(1200px 600px at 85% -10%,rgba(169,216,245,.35),transparent 60%),
+ radial-gradient(800px 500px at -10% 30%,rgba(29,91,184,.55),transparent 60%),
+ linear-gradient(160deg,#0c2a57 0%,#103a7a 45%,#1d5bb8 100%)}
+.bg svg{position:absolute;inset:0;width:100%;height:100%;opacity:.08}
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:32px 20px 80px}
+.brand{display:flex;align-items:center;gap:12px;color:#fff}
+.brand .ico{width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);display:grid;place-items:center}
+.brand small{display:block;color:var(--glove);font-size:13px;line-height:1.3}
+.brand b{font-weight:600;font-size:15px;line-height:1.3}
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:end;margin:36px 0 28px}
+h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;letter-spacing:-.035em;line-height:.95;color:#fff;font-size:clamp(38px,6vw,72px);margin:0 0 14px}
+.sub{color:#dbe9fb;max-width:520px;margin:0}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.kpi{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:18px;padding:14px 16px;color:#fff;backdrop-filter:blur(6px)}
+.kpi .n{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:800;font-size:38px;line-height:1;letter-spacing:-.03em}
+.kpi .l{color:var(--glove);font-size:13px;margin-top:6px}
+.panel{background:var(--panel);border-radius:28px;padding:22px;box-shadow:0 30px 80px -20px rgba(4,18,45,.6)}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px}
+.tabs{display:flex;gap:6px;overflow-x:auto;flex:1;min-width:0;padding-bottom:2px}
+.tab{border:0;background:var(--field);color:var(--ink);font:500 14px Geist,system-ui,sans-serif;padding:9px 14px;border-radius:999px;white-space:nowrap;cursor:pointer}
+.tab[aria-pressed=true]{background:var(--scrub);color:#fff}
+.search{background:var(--field);border:2px solid transparent;border-radius:14px;padding:10px 14px;font:16px Geist,system-ui,sans-serif;color:var(--ink);width:220px}
+.search:focus,input:focus,select:focus,textarea:focus{outline:none;border-color:var(--scrub)}
+.btn{border:0;background:var(--scrub);color:#fff;font:600 14px Geist,system-ui,sans-serif;padding:10px 16px;border-radius:14px;cursor:pointer}
+.btn.ghost{background:var(--field);color:var(--ink)}
+.status{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--lvl-2)}
+.dot.busy{background:var(--lvl-1)} .dot.err{background:var(--error)} .dot.ro{background:var(--muted)}
+.team{border:1px solid var(--line);border-radius:22px;margin-bottom:18px;overflow:hidden}
+.thead{display:flex;align-items:center;gap:16px;padding:16px 18px;background:var(--field)}
+.thead h2{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:800;letter-spacing:-.02em;font-size:24px;margin:0;line-height:1.1}
+.thead .meta{color:var(--muted);font-size:13px}
+.thead .grade{margin-left:auto;text-align:right}
+.big{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:800;font-size:40px;line-height:1;letter-spacing:-.03em}
+.big.none{color:var(--muted);font-size:28px}
+.glabel{font-size:12px;color:var(--muted)}
+.bar{height:6px;border-radius:6px;background:var(--line);margin-top:8px;overflow:hidden;width:160px}
+.bar i{display:block;height:100%;background:var(--lvl-2);border-radius:6px;transition:width .3s}
+.row{display:grid;grid-template-columns:minmax(180px,1.3fr) 1fr 1fr 84px;gap:14px;align-items:center;padding:14px 18px;border-top:1px solid var(--line)}
+.who b{display:block;font-weight:600;line-height:1.25}
+.who span{font-size:13px;color:var(--muted)}
+.who select{margin-top:6px;font:13px Geist,system-ui,sans-serif;background:var(--field);border:2px solid transparent;border-radius:10px;padding:4px 8px;color:var(--ink)}
+.arch{background:var(--field);border-radius:14px;padding:10px 12px;border:2px solid transparent;transition:border-color .2s,background .2s}
+.arch.done{background:var(--lvl-2-soft);border-color:color-mix(in srgb,var(--lvl-2) 35%,transparent)}
+.arch .top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.chk{display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px;cursor:pointer;user-select:none}
+.chk input{width:20px;height:20px;accent-color:var(--lvl-2);cursor:pointer}
+.fr{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.fr input{width:70px;background:var(--panel);border:2px solid var(--line);border-radius:10px;padding:5px 8px;font:600 15px Geist,system-ui,sans-serif;color:var(--ink);text-align:right}
+.stars{display:flex;gap:4px}
+.q{flex:1;border:0;border-radius:9px;padding:6px 0;font:700 14px "Bricolage Grotesque",system-ui,sans-serif;background:var(--panel);color:var(--muted);cursor:pointer;min-width:28px}
+.q[aria-pressed=true]{color:#fff}
+.q[aria-pressed=true][data-v="1"],.q[aria-pressed=true][data-v="2"]{background:var(--lvl-0)}
+.q[aria-pressed=true][data-v="3"]{background:var(--lvl-1)}
+.q[aria-pressed=true][data-v="4"],.q[aria-pressed=true][data-v="5"]{background:var(--lvl-2)}
+.ind{text-align:center}
+.ind .big{font-size:34px}
+.pill{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;margin-top:4px}
+.p0{background:var(--lvl-0-soft);color:var(--lvl-0)} .p1{background:var(--lvl-1-soft);color:var(--lvl-1)} .p2{background:var(--lvl-2-soft);color:var(--lvl-2)}
+.obs{grid-column:1/-1;margin-top:-4px}
+.obs textarea{width:100%;background:var(--field);border:2px solid transparent;border-radius:12px;padding:8px 12px;font:14px Geist,system-ui,sans-serif;color:var(--ink);resize:vertical;min-height:38px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted);margin:4px 2px 16px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--panel);padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:9}
+.toast.show{opacity:1}
+.empty{padding:30px;text-align:center;color:var(--muted)}
+.unassigned .thead{background:var(--lvl-0-soft)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.team{animation:rise .45s ease both}
+@media (prefers-reduced-motion:reduce){.team{animation:none}.bar i{transition:none}}
+@media (max-width:900px){
+ .hero{grid-template-columns:1fr;margin:24px 0 20px}
+ .row{grid-template-columns:1fr 1fr;gap:10px}
+ .who{grid-column:1/-1;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+ .ind{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;background:var(--field);border-radius:12px;padding:6px 12px;text-align:left}
+ .ind .big{font-size:26px}
+ .search{width:100%}
+ .panel{padding:14px;border-radius:24px}
+ .thead{padding:14px}
+ .row{padding:14px}
+ .bar{width:110px}
+}
+@media (max-width:420px){.row{grid-template-columns:1fr}.kpi .n{font-size:30px}.thead h2{font-size:20px}.big{font-size:32px}}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg"><defs><pattern id="p" width="46" height="46" patternUnits="userSpaceOnUse"><path d="M23 10c-6 0-9 3-9 8 0 6 3 8 4 14 1 4 2 5 3 5s1-3 2-6c1 3 1 6 2 6s2-1 3-5c1-6 4-8 4-14 0-5-3-8-9-8z" fill="none" stroke="#fff" stroke-width="1.2"/></pattern></defs><rect width="100%" height="100%" fill="url(#p)"/></svg></div>
+<div class="wrap" id="root"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+/* ================================================================
+   CONFIGURACIÓN: pega aquí la URL de tu aplicación web de Apps Script
+   (termina en /exec). Ver LEEME.md.
+   ================================================================ */
+const API_URL = "https://script.google.com/macros/s/AKfycbzIZcmA7A7X06kM629OEN77Mne2v5QfWU5CpupwxrsayTt4BKDDj1npe2jnZw52xYayxg/exec";
+
+(function(){
+const TEAMS=["Los Más Pro","Las STL","Curetitas","Esquites","Croquetas","Bean Bag Boys","Sin asignar"];
+let S=[],clave="",filter="Todos",query="",pend={},saving=false,saveTimer=null,lastSync=null;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmt=x=>x==null?"—":(Math.round(x*10)/10).toFixed(1);
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+function indiv(s){const v=[s.qs,s.qi].filter(x=>x>=1);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null}
+function lvl(x){return x==null?"":x<3?"p0":x<4?"p1":"p2"}
+function lvlTxt(x){return x==null?"Sin calificar":x<3?"Por mejorar":x<4?"Aceptable":"Muy bien"}
+function teamStats(t){const m=S.filter(s=>s.t===t);const g=m.map(indiv).filter(x=>x!=null);
+ return {m,n:m.length,done:m.filter(s=>s.sup&&s.inf).length,arches:m.reduce((a,s)=>a+(s.sup?1:0)+(s.inf?1:0),0),grade:g.length?g.reduce((a,b)=>a+b,0)/g.length:null}}
+
+const BRAND=`<header class="brand"><div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4c-4 0-6 2-6 5 0 4 2 5 2.6 9 .3 2 .9 3 1.4 3 .6 0 .8-2 1.2-4 .2-.8.5-1 .8-1s.6.2.8 1c.4 2 .6 4 1.2 4 .5 0 1.1-1 1.4-3C16 14 18 13 18 9c0-3-2-5-6-5z"/></svg></div>
+ <div><b>Escuela de Ciencias Estomatológicas</b><small>Universidad de Montemorelos</small></div></header>`;
+
+/* ---------- API ---------- */
+async function apiGet(){
+ const r=await fetch(API_URL+"?clave="+encodeURIComponent(clave),{cache:"no-store"});
+ const j=await r.json(); if(!j.ok) throw new Error(j.error||"error"); return j.students;
+}
+async function apiPost(cambios){
+ // Sin encabezados: se envía como text/plain y Apps Script lo acepta sin bloqueo CORS
+ const r=await fetch(API_URL,{method:"POST",body:JSON.stringify({clave,cambios})});
+ const j=await r.json(); if(!j.ok) throw new Error(j.error||"error"); return j;
+}
+
+/* ---------- Pantalla de acceso ---------- */
+function login(msg){
+ $("#root").innerHTML=BRAND+`<section class="hero"><div><h1>Control de escaneos intraorales</h1>
+ <p class="sub">Diseño en Tecnología de CAD/CAM de Prótesis Dental.</p></div>
+ <form class="panel" id="lf" style="max-width:440px;justify-self:end;width:100%">
+  <h2 style="font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;letter-spacing:-.02em;margin:0 0 6px;font-size:26px">Entrar</h2>
+  <p style="color:var(--muted);margin:0 0 16px;font-size:15px">Escribe la clave de acceso que te dio el profesor.</p>
+  <input class="search" id="clave" type="password" autocomplete="current-password" placeholder="Clave de acceso" style="width:100%;margin-bottom:12px">
+  ${msg?`<p style="background:var(--error-soft);color:var(--error);border-radius:12px;padding:10px 12px;font-size:14px;margin:0 0 12px">${esc(msg)}</p>`:""}
+  <button class="btn" style="width:100%;padding:14px">Abrir el control</button>
+ </form></section>`;
+ $("#lf").addEventListener("submit",async e=>{e.preventDefault();clave=$("#clave").value.trim();if(!clave)return;
+  const b=e.target.querySelector("button");b.textContent="Cargando…";b.disabled=true;await start()});
+ setTimeout(()=>$("#clave")&&$("#clave").focus(),50);
+}
+async function start(){
+ if(!API_URL||API_URL.indexOf("PEGA_AQUI")===0){
+  $("#root").innerHTML=BRAND+`<div class="panel" style="margin-top:40px"><h2 style="margin-top:0">Falta conectar la hoja</h2><p>Abre <code>index.html</code> y pega en <code>API_URL</code> la URL de la aplicación web de Apps Script (termina en <code>/exec</code>). Los pasos están en LEEME.md.</p></div>`;return}
+ try{S=await apiGet();store.set("escaneos_clave",clave);lastSync=new Date();shell();renderAll();setStatus("","Sincronizado")}
+ catch(err){store.del("escaneos_clave");
+  login(/clave/i.test(err.message)?"La clave no es correcta. Revísala e inténtalo de nuevo.":"No se pudo conectar con la hoja. Revisa tu internet o que la aplicación web esté publicada para «Cualquier usuario».")}
+}
+
+/* ---------- Interfaz ---------- */
+function shell(){
+ $("#root").innerHTML=BRAND+`
+ <section class="hero"><div><h1>Control de escaneos intraorales</h1>
+ <p class="sub">Diseño en Tecnología de CAD/CAM de Prótesis Dental. Marca cada arcada al terminar, anota los fotogramas y califica la calidad del 1 al 5.</p></div>
+ <div class="kpis" id="kpis"></div></section>
+ <main class="panel">
+  <div class="toolbar"><div class="tabs" id="tabs" role="toolbar" aria-label="Filtrar por equipo"></div>
+  <input class="search" id="q" type="search" placeholder="Buscar nombre o matrícula" aria-label="Buscar alumno">
+  <button class="btn ghost" id="sync">Actualizar</button>
+  <button class="btn ghost" id="copy">Copiar tabla</button>
+  <span class="status" id="status"><span class="dot"></span><span>Listo</span></span></div>
+  <div class="legend"><span>Calidad: <b style="color:var(--lvl-0)">1–2</b> por mejorar · <b style="color:var(--lvl-1)">3</b> aceptable · <b style="color:var(--lvl-2)">4–5</b> muy bien</span><span>Individual = promedio de superior e inferior · Grupal = promedio del equipo</span></div>
+  <div id="list"></div>
+  <p style="text-align:right;margin:8px 4px 0"><button class="btn ghost" id="out" style="font-size:13px;padding:6px 12px">Cerrar sesión</button></p>
+ </main>`;
+ $("#q").addEventListener("input",e=>{query=e.target.value.trim().toLowerCase();renderList()});
+ $("#copy").addEventListener("click",copyTable);
+ $("#sync").addEventListener("click",()=>refresh(true));
+ $("#out").addEventListener("click",()=>{store.del("escaneos_clave");clave="";login()});
+ const root=$("#list");
+ root.addEventListener("click",e=>{if(e.target.classList.contains("q"))onChange(e)});
+ root.addEventListener("change",onChange);
+ root.addEventListener("input",e=>{if(e.target.dataset.f&&(e.target.type==="number"||e.target.tagName==="TEXTAREA"))onChange(e)});
+}
+function renderKpis(){
+ const arches=S.reduce((a,s)=>a+(s.sup?1:0)+(s.inf?1:0),0),done=S.filter(s=>s.sup&&s.inf).length;
+ const g=S.map(indiv).filter(x=>x!=null);const avg=g.length?g.reduce((a,b)=>a+b,0)/g.length:null;
+ $("#kpis").innerHTML=`<div class="kpi"><div class="n">${done}<span style="font-size:20px;opacity:.7">/${S.length}</span></div><div class="l">Alumnos con ambas arcadas</div></div>
+ <div class="kpi"><div class="n">${arches}<span style="font-size:20px;opacity:.7">/${S.length*2}</span></div><div class="l">Arcadas escaneadas</div></div>
+ <div class="kpi"><div class="n">${fmt(avg)}</div><div class="l">Promedio del grupo</div></div>`;
+}
+function renderTabs(){
+ const opts=["Todos",...TEAMS.filter(t=>S.some(s=>s.t===t))];
+ if(!opts.includes(filter))filter="Todos";
+ $("#tabs").innerHTML=opts.map(t=>`<button class="tab" aria-pressed="${t===filter}" data-t="${esc(t)}">${esc(t)}</button>`).join("");
+ $("#tabs").querySelectorAll(".tab").forEach(b=>b.onclick=()=>{filter=b.dataset.t;renderTabs();renderList()});
+}
+function archHTML(s,k){
+ const done=k==="s"?s.sup:s.inf,f=k==="s"?s.fs:s.fi,q=k==="s"?s.qs:s.qi,label=k==="s"?"Superior":"Inferior";
+ return `<div class="arch ${done?"done":""}"><div class="top">
+  <label class="chk"><input type="checkbox" data-id="${s.id}" data-f="${k==="s"?"sup":"inf"}" ${done?"checked":""}>${label}</label>
+  <label class="fr">Fotogramas <input type="number" min="0" inputmode="numeric" data-id="${s.id}" data-f="${k==="s"?"fs":"fi"}" value="${f??""}"></label></div>
+  <div class="stars" role="group" aria-label="Calidad ${label}">${[1,2,3,4,5].map(v=>`<button class="q" data-id="${s.id}" data-f="${k==="s"?"qs":"qi"}" data-v="${v}" aria-pressed="${q===v}">${v}</button>`).join("")}</div></div>`;
+}
+function rowHTML(s){
+ const i=indiv(s);
+ const sel=s.t==="Sin asignar"?`<select data-id="${s.id}" data-f="t" aria-label="Asignar equipo"><option value="">Asignar a equipo…</option>${TEAMS.filter(t=>t!=="Sin asignar").map(t=>`<option>${esc(t)}</option>`).join("")}</select>`:"";
+ return `<div class="row" id="r${s.id}"><div class="who"><div><b>${esc(s.n)} ${esc(s.a)}</b><span>Matrícula ${esc(s.id)}</span>${sel?"<div>"+sel+"</div>":""}</div></div>
+ ${archHTML(s,"s")}${archHTML(s,"i")}
+ <div class="ind"><div><div class="glabel">Individual</div><div class="big ${i==null?"none":""}">${fmt(i)}</div></div><span class="pill ${lvl(i)}">${lvlTxt(i)}</span></div>
+ <div class="obs"><textarea rows="1" placeholder="Observaciones" data-id="${s.id}" data-f="obs">${esc(s.obs||"")}</textarea></div></div>`;
+}
+function renderList(){
+ const teams=TEAMS.filter(t=>(filter==="Todos"||filter===t));
+ let html="";
+ for(const t of teams){
+  const st=teamStats(t);
+  const members=st.m.filter(s=>!query||(s.n+" "+s.a+" "+s.id).toLowerCase().includes(query));
+  if(!members.length)continue;
+  const pct=st.n?Math.round(st.arches/(st.n*2)*100):0;
+  html+=`<section class="team ${t==="Sin asignar"?"unassigned":""}"><div class="thead"><div><h2>${esc(t)}</h2>
+   <div class="meta">${st.n} integrante${st.n===1?"":"s"} · ${st.done} con ambas arcadas</div><div class="bar"><i style="width:${pct}%"></i></div></div>
+   <div class="grade"><div class="glabel">${t==="Sin asignar"?"Sin equipo":"Calificación grupal"}</div><div class="big ${st.grade==null?"none":""}">${fmt(st.grade)}</div></div></div>
+   ${members.map(rowHTML).join("")}</section>`;
+ }
+ $("#list").innerHTML=html||`<div class="empty">No hay alumnos que coincidan con “${esc(query)}”.</div>`;
+}
+function renderAll(){renderKpis();renderTabs();renderList()}
+function refreshRow(id){
+ const s=S.find(x=>x.id===id);const el=document.getElementById("r"+id);
+ if(el){const tmp=document.createElement("div");tmp.innerHTML=rowHTML(s);
+  const a=document.activeElement;
+  if(a&&el.contains(a)&&(a.tagName==="TEXTAREA"||(a.tagName==="INPUT"&&a.type==="number"))){
+   el.querySelector(".ind").replaceWith(tmp.querySelector(".ind"));
+   el.querySelectorAll(".arch").forEach((x,ix)=>x.classList.toggle("done",!!(ix?s.inf:s.sup)));
+  } else el.replaceWith(tmp.firstElementChild);
+ }
+ renderKpis();
+ document.querySelectorAll(".team").forEach(sec=>{
+  const t=sec.querySelector("h2").textContent;const st=teamStats(t);
+  const g=sec.querySelector(".grade .big");g.textContent=fmt(st.grade);g.classList.toggle("none",st.grade==null);
+  sec.querySelector(".bar i").style.width=(st.n?Math.round(st.arches/(st.n*2)*100):0)+"%";
+  sec.querySelector(".meta").textContent=`${st.n} integrante${st.n===1?"":"s"} · ${st.done} con ambas arcadas`;
+ });
+}
+function setStatus(kind,txt){const el=$("#status");if(!el)return;el.querySelector(".dot").className="dot "+kind;el.lastElementChild.textContent=txt}
+function toast(t){const el=$("#toast");el.textContent=t;el.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove("show"),2400)}
+
+/* ---------- Cambios y guardado ---------- */
+function mark(id,f,v){(pend[id]=pend[id]||{})[f]=v}
+function onChange(e){
+ const el=e.target;const id=el.dataset.id,f=el.dataset.f;if(!id||!f)return;
+ const s=S.find(x=>x.id===id);
+ if(el.classList.contains("q")){const v=+el.dataset.v;s[f]=s[f]===v?null:v;mark(id,f,s[f]);
+  if(f==="qs"&&s.qs&&!s.sup){s.sup=true;mark(id,"sup",true)}
+  if(f==="qi"&&s.qi&&!s.inf){s.inf=true;mark(id,"inf",true)}
+  refreshRow(id)}
+ else if(el.type==="checkbox"){s[f]=el.checked;mark(id,f,s[f]);refreshRow(id)}
+ else if(el.type==="number"){s[f]=el.value===""?null:Math.max(0,parseInt(el.value,10)||0);mark(id,f,s[f]);if(e.type==="input")return queue(1500)}
+ else if(el.tagName==="TEXTAREA"){s[f]=el.value;mark(id,f,s[f]);if(e.type==="input")return queue(1500)}
+ else if(el.tagName==="SELECT"&&f==="t"){if(!el.value)return;s.t=el.value;mark(id,"t",s.t);toast(`${s.n} pasó a ${el.value}`);renderAll()}
+ queue(600);
+}
+function queue(ms){setStatus("busy","Guardando…");clearTimeout(saveTimer);saveTimer=setTimeout(save,ms)}
+async function save(){
+ if(saving){queue(800);return}
+ const batch=Object.entries(pend).map(([id,c])=>Object.assign({id},c));
+ if(!batch.length){setStatus("","Guardado");return}
+ pend={};saving=true;
+ try{await apiPost(batch);lastSync=new Date();setStatus("","Guardado "+lastSync.toLocaleTimeString("es-MX",{hour:"2-digit",minute:"2-digit"}))}
+ catch(err){
+  for(const c of batch){const{id,...rest}=c;pend[id]=Object.assign(rest,pend[id]||{})}
+  if(/clave/i.test(err.message)){setStatus("err","Clave inválida");toast("La clave cambió. Vuelve a entrar.")}
+  else{setStatus("err","No se guardó. Reintentando…");saveTimer=setTimeout(save,5000)}
+ }finally{saving=false}
+}
+/* Trae los cambios de otras personas cada 30 s, sin pisar lo que se está escribiendo */
+async function refresh(manual){
+ if(!clave)return;
+ if(Object.keys(pend).length||saving){if(manual)toast("Espera a que termine de guardar.");return}
+ const a=document.activeElement;if(!manual&&a&&$("#list")&&$("#list").contains(a)&&(a.tagName==="TEXTAREA"||a.tagName==="INPUT"))return;
+ try{const fresh=await apiGet();if(Object.keys(pend).length)return;
+  if(JSON.stringify(fresh)!==JSON.stringify(S)){S=fresh;renderAll()}
+  lastSync=new Date();setStatus("","Sincronizado "+lastSync.toLocaleTimeString("es-MX",{hour:"2-digit",minute:"2-digit"}));if(manual)toast("Datos actualizados.")}
+ catch(e){if(manual)setStatus("err","No se pudo actualizar")}
+}
+setInterval(()=>{if(document.visibilityState==="visible")refresh(false)},30000);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")refresh(false)});
+window.addEventListener("beforeunload",e=>{if(Object.keys(pend).length){save();e.preventDefault();e.returnValue=""}});
+
+async function copyTable(){
+ const h=["Equipo","Nombre(s)","Apellidos","Matrícula","Superior","Fotogramas sup.","Calidad sup.","Inferior","Fotogramas inf.","Calidad inf.","Calif. individual","Calif. grupal","Observaciones"];
+ const rows=S.map(s=>[s.t,s.n,s.a,s.id,s.sup?"Sí":"No",s.fs??"",s.qs??"",s.inf?"Sí":"No",s.fi??"",s.qi??"",indiv(s)==null?"":fmt(indiv(s)),teamStats(s.t).grade==null?"":fmt(teamStats(s.t).grade),(s.obs||"").replace(/\s+/g," ")]);
+ try{await navigator.clipboard.writeText([h,...rows].map(r=>r.join("\t")).join("\n"));toast("Tabla copiada. Pégala en Excel o Sheets.")}catch(e){toast("No se pudo copiar desde este navegador.")}
+}
+
+clave=store.get("escaneos_clave")||"";
+if(clave){$("#root").innerHTML=BRAND+`<p style="color:#fff;margin-top:40px">Cargando…</p>`;start()}else login();
+})();
+</script>
+</body>
+</html>
